@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceTracker - Presupuesto</title>
+    <style>
+        /* Reset de márgenes y paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Estilo del cuerpo */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            min-height: 90vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #f8f9ff;
+            padding: 20px;
+            border-right: 1px solid #e0e6ed;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #4285f4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo::before {
+            content: '$';
+        }
+
+        .app-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .nav-item:hover {
+            background: #e2e8f0;
+            color: #2563eb;
+        }
+
+        .nav-item.active {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .nav-item::before {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .nav-item.inicio::before {
+            content: "🏠";
+        }
+
+        .nav-item.movimiento::before {
+            content: "💳";
+        }
+
+        .nav-item.presupuesto::before {
+            content: "📊";
+        }
+
+        .nav-item.reportes::before {
+            content: "📈";
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background: #fafbfc;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .budget-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .btn-new-budget {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-new-budget:hover {
+            background: #3367d6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+
+        .budget-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .budget-item {
+            background: #c8f5d4;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .budget-item.exceeded {
+            background: #fecaca;
+        }
+
+        .budget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .budget-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        .budget-icon.food::before {
+            content: "🍽️";
+        }
+
+        .budget-icon.transport::before {
+            content: "🚌";
+        }
+
+        .budget-icon.entertainment::before {
+            content: "📺";
+        }
+
+        .budget-icon.health::before {
+            content: "🏥";
+        }
+
+        .budget-info {
+            flex: 1;
+        }
+
+        .budget-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .budget-spent {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .budget-percentage {
+            font-size: 12px;
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .budget-exceeded .budget-percentage {
+            color: #dc2626;
+        }
+
+        .budget-status {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .budget-exceeded .budget-status {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .budget-amounts {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .budget-amount {
+            font-size: 14px;
+            color: #4285f4;
+            font-weight: 600;
+        }
+
+        .budget-available {
+            font-size: 12px;
+            color: #059669;
+        }
+
+        .budget-exceeded .budget-available {
+            color: #dc2626;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .budget-exceeded .progress-fill {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header .icon {
+            width: 40px;
+            height: 40px;
+            background: #4285f4;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        .modal-header .icon::before {
+            content: '$';
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+        }
+
+        .form-alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #4285f4;
+        }
+
+        .alert-option input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-create {
+            flex: 1;
+            padding: 12px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-create:hover {
+            background: #3367d6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+
+        .description-area {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo"></div>
+            <div class="app-title">FINANCETRACKER</div>
+            
+            <a href="/dashboard.html" class="nav-item  inicio">INICIO</a>
+            <a href="/movimiento.html" class="nav-item movimiento">MOVIMIENTO</a>
+            <a href="/presupuesto.html" class="nav-item active presupuesto">PRESUPUESTO</a>
+            <a href="/reportes.html" class="nav-item reportes">REPORTES</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <div class="welcome">HOLA, USUARIO</div>
+                    <div class="budget-subtitle">PRESUPUESTO</div>
+                </div>
+                <button class="btn-new-budget" onclick="openModal()">Nuevo presupuesto</button>
+            </div>
+
+            <!-- Budget List -->
+            <div class="budget-list">
+                <!-- Alimentación -->
+                <div class="budget-item">
+                    <div class="budget-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="budget-icon food"></div>
+                            <div class="budget-info">
+                                <div class="budget-name">Alimentación</div>
+                                <div class="budget-spent">GASTADO: S/ 600</div>
+                                <div class="budget-percentage">50% UTILIZADO</div>
+                            </div>
+                        </div>
+                        <div class="budget-status">En límite</div>
+                    </div>
+                    <div class="budget-amounts">
+                        <div class="budget-amount">PRESUPUESTO: S/ 1200</div>
+                        <div class="budget-available">DISPONIBLE: S/600</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- Transporte -->
+                <div class="budget-item">
+                    <div class="budget-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="budget-icon transport"></div>
+                            <div class="budget-info">
+                                <div class="budget-name">Transporte</div>
+                                <div class="budget-spent">GASTADO: S/ 100</div>
+                                <div class="budget-percentage">50% UTILIZADO</div>
+                            </div>
+                        </div>
+                        <div class="budget-status">En límite</div>
+                    </div>
+                    <div class="budget-amounts">
+                        <div class="budget-amount">PRESUPUESTO: S/ 200</div>
+                        <div class="budget-available">DISPONIBLE: S/100</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- Entretenimiento -->
+                <div class="budget-item">
+                    <div class="budget-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="budget-icon entertainment"></div>
+                            <div class="budget-info">
+                                <div class="budget-name">Entretenimiento</div>
+                                <div class="budget-spent">GASTADO: S/ 250</div>
+                                <div class="budget-percentage">50% UTILIZADO</div>
+                            </div>
+                        </div>
+                        <div class="budget-status">En límite</div>
+                    </div>
+                    <div class="budget-amounts">
+                        <div class="budget-amount">PRESUPUESTO: S/ 500</div>
+                        <div class="budget-available">DISPONIBLE: S/250</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- Salud (Excedido) -->
+                <div class="budget-item exceeded">
+                    <div class="budget-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="budget-icon health"></div>
+                            <div class="budget-info">
+                                <div class="budget-name">Salud</div>
+                                <div class="budget-spent">GASTADO: S/ 600</div>
+                                <div class="budget-percentage">80% UTILIZADO</div>
+                            </div>
+                        </div>
+                        <div class="budget-status">Excedido</div>
+                    </div>
+                    <div class="budget-amounts">
+                        <div class="budget-amount">PRESUPUESTO: S/ 800</div>
+                        <div class="budget-available">DISPONIBLE: S/200</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for New Budget -->
+    <div class="modal" id="budgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon"></div>
+                <div>
+                    <div class="modal-title">FINANCETRACKER</div>
+                    <div style="font-size: 14px; color: #64748b; margin-top: 2px;">NUEVO PRESUPUESTO</div>
+                </div>
+            </div>
+
+            <form id="budgetForm">
+                <div class="form-group">
+                    <label class="form-label">Categoría</label>
+                    <select class="form-select" id="category" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="alimentacion">Alimentación</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="entretenimiento">Entretenimiento</option>
+                        <option value="salud">Salud</option>
+                        <option value="educacion">Educación</option>
+                        <option value="hogar">Hogar</option>
+                        <option value="ropa">Ropa</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Monto del presupuesto</label>
+                    <input type="number" class="form-input" id="amount" placeholder="0.00" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Período</label>
+                    <select class="form-select" id="period" required>
+                        <option value="">Mensual</option>
+                        <option value="semanal">Semanal</option>
+                        <option value="mensual">Mensual</option>
+                        <option value="anual">Anual</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha de inicio</label>
+                    <input type="date" class="form-input" id="startDate" required>
+                </div>
+
+                <div class="form-alerts">
+                    <label class="form-label">Alertas</label>
+                    <div class="alert-option">
+                        <input type="checkbox" id="alert50">
+                        <label for="alert50">🔔 NOTIFICAR AL 50% DEL PRESUPUESTO</label>
+                    </div>
+                    <div class="alert-option">
+                        <input type="checkbox" id="alert100">
+                        <label for="alert100">🔔 NOTIFICAR AL EXCEDER EL PRESUPUESTO</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-input description-area" id="description" placeholder="Descripción opcional..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">CANCELAR</button>
+                    <button type="submit" class="btn-create">CREAR PRESUPUESTO</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('budgetModal').classList.add('active');
+            // Set today's date as default
+            document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeModal() {
+            document.getElementById('budgetModal').classList.remove('active');
+            document.getElementById('budgetForm').reset();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('budgetModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('budgetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                category: document.getElementById('category').value,
+                amount: document.getElementById('amount').value,
+                period: document.getElementById('period').value,
+                startDate: document.getElementById('startDate').value,
+                alert50: document.getElementById('alert50').checked,
+                alert100: document.getElementById('alert100').checked,
+                description: document.getElementById('description').value
+            };
+            
+            console.log('Nuevo presupuesto:', formData);
+            
+            // Here you would typically send the data to your backend
+            alert('Presupuesto creado exitosamente!');
+            closeModal();
+        });
+
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

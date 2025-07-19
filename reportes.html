@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinanceTracker - Reportes</title>
+    <style>
+      /* Reset de márgenes y paddings */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Estilo del cuerpo */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        min-height: 90vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        background: #f8f9ff;
+        padding: 20px;
+        border-right: 1px solid #e0e6ed;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        background: #4285f4;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .logo::before {
+        content: "$";
+        margin-right: 0;
+        font-size: 20px;
+      }
+
+      .app-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        color: #64748b;
+        text-decoration: none;
+      }
+
+      .nav-item:hover {
+        background: #e2e8f0;
+        color: #2563eb;
+      }
+
+      .nav-item.active {
+        background: #dbeafe;
+        color: #2563eb;
+      }
+
+      .nav-item::before {
+        margin-right: 12px;
+        font-size: 18px;
+      }
+
+      .nav-item.inicio::before {
+        content: "🏠";
+      }
+
+      .nav-item.movimiento::before {
+        content: "💳";
+      }
+
+      .nav-item.presupuesto::before {
+        content: "📊";
+      }
+
+      .nav-item.reportes::before {
+        content: "📈";
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 30px;
+        background: #fafbfc;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .welcome {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      .header-subtitle {
+        font-size: 14px;
+        color: #64748b;
+        margin-top: 5px;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+        font-size: 16px;
+      }
+
+      .icon-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .reports-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .report-card {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f5f9;
+      }
+
+      .report-header {
+        margin-bottom: 20px;
+      }
+
+      .report-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 5px;
+      }
+
+      .category-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .category-item:last-child {
+        border-bottom: none;
+      }
+
+      .category-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .category-icon {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 12px;
+      }
+
+      .category-icon.alimentacion {
+        background: #10b981;
+      }
+
+      .category-icon.transporte {
+        background: #3b82f6;
+      }
+
+      .category-icon.entretenimiento {
+        background: #8b5cf6;
+      }
+
+      .category-icon.salud {
+        background: #ef4444;
+      }
+
+      .category-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .category-amount {
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748b;
+      }
+
+      .evolution-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        margin-bottom: 12px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .evolution-month {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .evolution-amount {
+        font-size: 14px;
+        font-weight: 700;
+        color: #10b981;
+      }
+
+      .summary-card {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f5f9;
+      }
+
+      .summary-header {
+        margin-bottom: 20px;
+      }
+
+      .summary-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+      }
+
+      .summary-item.movements {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      }
+
+      .summary-item.income {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      }
+
+      .summary-item.expense {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+      }
+
+      .summary-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .summary-value {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .summary-value.movements {
+        color: #2563eb;
+      }
+
+      .summary-value.income {
+        color: #059669;
+      }
+
+      .summary-value.expense {
+        color: #dc2626;
+      }
+
+      .export-section {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+      }
+
+      .export-title {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .export-subtitle {
+        font-size: 10px;
+        color: #94a3b8;
+        margin-bottom: 15px;
+      }
+
+      .export-btn {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+      }
+
+      .export-btn.excel {
+        background: #10b981;
+        color: white;
+      }
+
+      .export-btn.pdf {
+        background: #ef4444;
+        color: white;
+      }
+
+      .export-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .export-btn::before {
+        margin-right: 8px;
+        font-size: 16px;
+      }
+
+      .export-btn.excel::before {
+        content: "📊";
+      }
+
+      .export-btn.pdf::before {
+        content: "📄";
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          margin: 10px;
+          border-radius: 15px;
+        }
+
+        .sidebar {
+          width: 100%;
+          padding: 15px;
+        }
+
+        .main-content {
+          padding: 20px;
+        }
+
+        .reports-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .export-section {
+          position: static;
+          margin-top: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="logo"></div>
+        <div class="app-title">FINANCETRACKER</div>
+
+        <a href="/dashboard.html" class="nav-item inicio">INICIO</a>
+        <a href="/movimiento.html" class="nav-item movimiento">MOVIMIENTO</a>
+        <a href="/presupuesto.html" class="nav-item presupuesto">PRESUPUESTO</a>
+        <a href="/reportes.html" class="nav-item active reportes">REPORTES</a>
+      </div>
+
+      <!-- Contenido Principal -->
+      <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+          <div>
+            <h1 class="welcome">HOLA, JHAIR</h1>
+            <p class="header-subtitle">REPORTES Y ANÁLISIS</p>
+          </div>
+          <div class="header-actions">
+            <button class="icon-btn">🔔</button>
+            <button class="icon-btn">⚙️</button>
+            <button class="icon-btn">👤</button>
+          </div>
+        </div>
+
+        <!-- Grid de Reportes -->
+        <div class="reports-grid">
+          <!-- Categorías por Gastos -->
+          <div class="report-card">
+            <div class="report-header">
+              <h2 class="report-title">CATEGORÍA POR GASTOS</h2>
+            </div>
+            <div class="categories-list">
+              <div class="category-item">
+                <div class="category-info">
+                  <div class="category-icon alimentacion"></div>
+                  <span class="category-name">🍽️ Alimentación</span>
+                </div>
+                <span class="category-amount">S/ 600</span>
+              </div>
+              <div class="category-item">
+                <div class="category-info">
+                  <div class="category-icon transporte"></div>
+                  <span class="category-name">🚌 Transporte</span>
+                </div>
+                <span class="category-amount">S/ 100</span>
+              </div>
+              <div class="category-item">
+                <div class="category-info">
+                  <div class="category-icon entretenimiento"></div>
+                  <span class="category-name">🎬 Entretenimiento</span>
+                </div>
+                <span class="category-amount">S/ 250</span>
+              </div>
+              <div class="category-item">
+                <div class="category-info">
+                  <div class="category-icon salud"></div>
+                  <span class="category-name">🏥 Salud</span>
+                </div>
+                <span class="category-amount">S/ 600</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evolución Mensual -->
+          <div class="report-card">
+            <div class="report-header">
+              <h2 class="report-title">EVOLUCIÓN MENSUAL</h2>
+            </div>
+            <div class="evolution-list">
+              <div class="evolution-item">
+                <span class="evolution-month">MAYO 2025</span>
+                <span class="evolution-amount">+ S/ 5,000</span>
+              </div>
+              <div class="evolution-item">
+                <span class="evolution-month">ABRIL 2025</span>
+                <span class="evolution-amount">+ S/ 4,100</span>
+              </div>
+              <div class="evolution-item">
+                <span class="evolution-month">MARZO 2025</span>
+                <span class="evolution-amount">+ S/ 2,230</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen del Mes -->
+        <div class="summary-card">
+          <div class="summary-header">
+            <h2 class="report-title">RESUMEN EL MES</h2>
+          </div>
+          <div class="summary-list">
+            <div class="summary-item movements">
+              <span class="summary-label">TOTAL DE MOVIMIENTOS</span>
+              <span class="summary-value movements">156</span>
+            </div>
+            <div class="summary-item income">
+              <span class="summary-label">INGRESOS TOTALES</span>
+              <span class="summary-value income">S/ 10,000</span>
+            </div>
+            <div class="summary-item expense">
+              <span class="summary-label">GASTOS TOTALES</span>
+              <span class="summary-value expense">-S/ 500</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+
+      // Animaciones de entrada
+      window.addEventListener("load", function () {
+        const cards = document.querySelectorAll(".report-card, .summary-card");
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+            card.style.transition = "all 0.6s ease-out";
+
+            setTimeout(() => {
+              card.style.opacity = "1";
+              card.style.transform = "translateY(0)";
+            }, 50);
+          }, index * 100);
+        });
+      });
+
+      // Hover effects para las categorías
+      document.querySelectorAll(".category-item").forEach((item) => {
+        item.addEventListener("mouseenter", function () {
+          this.style.backgroundColor = "#f8fafc";
+          this.style.transform = "translateX(5px)";
+          this.style.transition = "all 0.2s ease";
+        });
+
+        item.addEventListener("mouseleave", function () {
+          this.style.backgroundColor = "transparent";
+          this.style.transform = "translateX(0)";
+        });
+      });
+
+      // Click en elementos de evolución para mostrar detalles
+      document.querySelectorAll(".evolution-item").forEach((item) => {
+        item.addEventListener("click", function () {
+          const month = this.querySelector(".evolution-month").textContent;
+          const amount = this.querySelector(".evolution-amount").textContent;
+          alert(`Detalles de ${month}: ${amount}`);
+        });
+      });
+    </script>
+  </body>
+</html>

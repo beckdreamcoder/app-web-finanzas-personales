@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceTracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="/dashboard.html"><div class="logo">$</div></a> 
+            <a href="/dashboard.html" class="nav-item active inicio">INICIO</a>
+            <a href="/movimiento.html" class="nav-item movimiento">MOVIMIENTO</a>
+            <a href="/presupuesto.html" class="nav-item presupuesto">PRESUPUESTO</a>
+            <a href="/reportes.html" class="nav-item reportes">REPORTES</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="welcome">HOLA, USUARIO</div>
+                <div class="header-actions">
+                    <button class="icon-btn">🌙</button>
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">⚙️</button>
+                    <button class="icon-btn">👤</button>
+                </div>
+            </div>
+
+            <div class="balance-card">
+                <div class="balance-label">SALDO TOTAL</div>
+                <div class="balance-amount" id="totalBalance">S/ 1,000,000</div>
+                <div class="balance-subtitle">DISPONIBLE PARA ESTE MES</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">INGRESOS</div>
+                        <div class="stat-period">ESTE MES</div>
+                    </div>
+                    <div class="stat-amount income" id="monthlyIncome">+ S/ 250,000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">GASTOS</div>
+                        <div class="stat-period">ESTE MES</div>
+                    </div>
+                    <div class="stat-amount expense" id="monthlyExpenses">- S/ 10,000</div>
+                </div>
+            </div>
+
+            <div class="actions-grid">
+                <button class="action-btn" onclick="openModal('transfer')">
+                    <span class="icon">💸</span>
+                    <span class="text">TRANSFERIR DINERO</span>
+                </button>
+                <button class="action-btn" onclick="openModal('payment')">
+                    <span class="icon">💳</span>
+                    <span class="text">PAGAR SERVICIOS</span>
+                </button>
+                <button class="action-btn" onclick="openModal('loan')">
+                    <span class="icon">💰</span>
+                    <span class="text">PRÉSTAMOS</span>
+                </button>
+            </div>
+
+            <div class="recent-transactions">
+                <div class="section-header">
+                    <div class="section-title">MOVIMIENTOS RECIENTES</div>
+                    <div class="view-all-btn">VER TODO</div>
+                </div>
+                <div id="transactionsList">
+                    <div class="transaction-item">
+                        <div class="transaction-icon income">💰</div>
+                        <div class="transaction-details">
+                            <div class="transaction-name">Pago mensual</div>
+                            <div class="transaction-date">2025-06-30</div>
+                        </div>
+                        <div class="transaction-amount income">+ S/ 20,000</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-icon expense">🏪</div>
+                        <div class="transaction-details">
+                            <div class="transaction-name">Supermercado Plaza vea</div>
+                            <div class="transaction-date">2025-05-24</div>
+                        </div>
+                        <div class="transaction-amount expense">- S/ 500</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-icon expense">🏥</div>
+                        <div class="transaction-details">
+                            <div class="transaction-name">Clínica San Gabriel</div>
+                            <div class="transaction-date">2025-05-14</div>
+                        </div>
+                        <div class="transaction-amount expense">- S/ 1,200</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" onclick="openModal('add')">+</button>
+
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon">💰</div>
+                <div class="modal-title">AGREGAR MOVIMIENTO</div>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-select" id="transactionType">
+                        <option value="income">Ingreso</option>
+                        <option value="expense">Gasto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Monto</label>
+                    <input type="number" class="form-input" id="transactionAmount" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoría</label>
+                    <select class="form-select" id="transactionCategory">
+                        <option value="alimentacion">Alimentación</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="salud">Salud</option>
+                        <option value="entretenimiento">Entretenimiento</option>
+                        <option value="servicios">Servicios</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" class="form-input" id="transactionDescription" placeholder="Describe tu movimiento">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" class="form-input" id="transactionDate">
+                </div>
+                <button type="submit" class="btn-primary">GUARDAR MOVIMIENTO</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo
+        let transactions = [
+            {
+                id: 1,
+                type: 'income',
+                amount: 20000,
+                description: 'Pago mensual',
+                category: 'salario',
+                date: '2025-06-30'
+            },
+            {
+                id: 2,
+                type: 'expense',
+                amount: 500,
+                description: 'Supermercado Plaza vea',
+                category: 'alimentacion',
+                date: '2025-05-24'
+            },
+            {
+                id: 3,
+                type: 'expense',
+                amount: 1200,
+                description: 'Clínica San Gabriel',
+                category: 'salud',
+                date: '2025-05-14'
+            }
+        ];
+
+        let totalBalance = 1000000;
+
+        // Configurar fecha actual
+        document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
+
+        // Función para abrir modal
+        function openModal(type) {
+            document.getElementById('transactionModal').classList.add('active');
+        }
+
+        // Función para cerrar modal
+        function closeModal() {
+            document.getElementById('transactionModal').classList.remove('active');
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('transactionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Función para formatear moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-PE', {
+                style: 'currency',
+                currency: 'PEN',
+                minimumFractionDigits: 0
+            }).format(amount).replace('PEN', 'S/');
+        }
+
+        // Función para obtener icono por categoría
+        function getCategoryIcon(category) {
+            const icons = {
+                'alimentacion': '🍽️',
+                'transporte': '🚗',
+                'salud': '🏥',
+                'entretenimiento': '🎬',
+                'servicios': '🏠',
+                'salario': '💰',
+                'otros': '📦'
+            };
+            return icons[category] || '📦';
+        }
+
+        // Función para actualizar estadísticas
+        function updateStats() {
+            const monthlyIncome = transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const monthlyExpenses = transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            document.getElementById('monthlyIncome').textContent = `+ ${formatCurrency(monthlyIncome)}`;
+            document.getElementById('monthlyExpenses').textContent = `- ${formatCurrency(monthlyExpenses)}`;
+            document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
+        }
+
+        // Función para renderizar transacciones
+        function renderTransactions() {
+            const transactionsList = document.getElementById('transactionsList');
+            transactionsList.innerHTML = '';
+
+            transactions.slice(-5).reverse().forEach(transaction => {
+                const transactionElement = document.createElement('div');
+                transactionElement.className = 'transaction-item';
+                
+                const icon = getCategoryIcon(transaction.category);
+                const amount = transaction.type === 'income' ? 
+                    `+ ${formatCurrency(transaction.amount)}` : 
+                    `- ${formatCurrency(transaction.amount)}`;
+                
+                transactionElement.innerHTML = `
+                    <div class="transaction-icon ${transaction.type}">
+                        ${icon}
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-name">${transaction.description}</div>
+                        <div class="transaction-date">${transaction.date}</div>
+                    </div>
+                    <div class="transaction-amount ${transaction.type}">${amount}</div>
+                `;
+                
+                transactionsList.appendChild(transactionElement);
+            });
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('transactionType').value;
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const category = document.getElementById('transactionCategory').value;
+            const description = document.getElementById('transactionDescription').value;
+            const date = document.getElementById('transactionDate').value;
+
+            if (!amount || amount <= 0) {
+                alert('Por favor ingresa un monto válido');
+                return;
+            }
+
+            if (!description.trim()) {
+                alert('Por favor ingresa una descripción');
+                return;
+            }
+
+            // Agregar nueva transacción
+            const newTransaction = {
+                id: Date.now(),
+                type,
+                amount,
+                category,
+                description,
+                date
+            };
+
+            transactions.push(newTransaction);
+
+            // Actualizar balance total
+            if (type === 'income') {
+                totalBalance += amount;
+            } else {
+                totalBalance -= amount;
+            }
+
+            // Actualizar interfaz
+            updateStats();
+            renderTransactions();
+
+            // Limpiar formulario y cerrar modal
+            document.getElementById('transactionForm').reset();
+            document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
+            closeModal();
+
+            // Mostrar mensaje de éxito
+            alert('Transacción agregada exitosamente');
+        });
+
+        // Navegación del sidebar
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Inicializar aplicación
+        updateStats();
+        renderTransactions();
+
+        // Animaciones de carga
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.stat-card, .action-btn, .transaction-item').forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    element.style.transition = 'all 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

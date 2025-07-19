@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceTracker - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Login Card -->
+        <div class="auth-card">
+            <div class="logo">$</div>
+            <h1 class="app-title">FINANCETRACKER</h1>
+            <p class="app-subtitle">Comprometidos con tu bienestar financiero</p>
+            
+            <div class="success-message" id="successMessage">
+                ¡Bienvenido! Iniciando sesión...
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="email" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="password" required placeholder="••••••••">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">👁</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+            </form>
+            
+            <div class="divider">
+                <span>o</span>
+            </div>
+            
+            <button class="btn btn-google" onclick="loginWithGoogle()">
+                <div class="google-icon"></div>
+                Continuar con Google
+            </button>
+            
+            <div class="register-link">
+                <a href="#" class="link" onclick="showRegister()">¿No tienes cuenta? Regístrate</a>
+            </div>
+        </div>
+
+        <!-- Register Card -->
+        <div class="auth-card" id="registerCard" style="display: none;">
+            <div class="logo">$</div>
+            <h1 class="app-title">FINANCETRACKER</h1>
+            <p class="app-subtitle">Crear cuenta</p>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="fullName" required placeholder="Tu nombre completo">
+                </div>
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="regEmail" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="regPassword" required placeholder="••••••••">
+                        <button type="button" class="password-toggle" onclick="toggleRegisterPassword()">👁</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear cuenta</button>
+            </form>
+            
+            <div class="register-link">
+                <a href="#" class="link" onclick="showLogin()">¿Ya tienes cuenta? Inicia sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cambiar contraseña visible o no
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁';
+            }
+        }
+
+        function toggleRegisterPassword() {
+            const passwordInput = document.getElementById('regPassword');
+            const toggleBtn = document.querySelector('#registerCard .password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁';
+            }
+        }
+
+        // Mostrar formulario de registro
+        function showRegister() {
+            const loginCard = document.querySelector('.auth-card:first-child');
+            const registerCard = document.getElementById('registerCard');
+            
+            loginCard.style.display = 'none';
+            registerCard.style.display = 'block';
+        }
+
+        // Mostrar formularion del login
+        function showLogin() {
+            const loginCard = document.querySelector('.auth-card:first-child');
+            const registerCard = document.getElementById('registerCard');
+            
+            registerCard.style.display = 'none';
+            loginCard.style.display = 'block';
+        }
+
+        // Manejo del envio del login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Mostrar mensaje logrado
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            // Simulacion del proceso de login
+            setTimeout(() => {
+                alert(`¡Bienvenido! Iniciando sesión con: ${email}`);
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        });
+
+        // Manejo para el envio de un registro
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            alert(`¡Cuenta creada exitosamente para ${fullName}!`);
+            showLogin();
+        });
+
+        // Logeo con Google
+        function loginWithGoogle() {
+            alert('Iniciando sesión con Google...');
+            // Aca se tendira que usar Google OAuth
+        }
+
+        // Efectos interactivos
+        document.addEventListener('DOMContentLoaded', function() {
+            // effecto de focus e inputs
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Añadir effteco ripple a los botones
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
